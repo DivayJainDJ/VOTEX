@@ -103,7 +103,7 @@ if __name__ == '__main__':
         'language': 'en',
         'silero_sensitivity': 0.5,
         'webrtc_sensitivity': 3,
-        'post_speech_silence_duration': 0.3,  # Faster detection
+        'post_speech_silence_duration': 1.0,  # 1 second pause to stop recording
         'min_length_of_recording': 0.2,
         'min_gap_between_recordings': 0,
         'enable_realtime_transcription': False,
@@ -201,12 +201,16 @@ if __name__ == '__main__':
                                 'text': final_sentence
                             })), main_loop)
                         
-                        # Send stop signal to client
+                        total_time = time.time() - start_time
+                        
+                        # Send stop signal to client with latency
                         asyncio.run_coroutine_threadsafe(
                             send_to_client(json.dumps({
-                                'type': 'recording_complete'
+                                'type': 'recording_complete',
+                                'latency': int(total_time * 1000)  # Convert to milliseconds
                             })), main_loop)
-                    total_time = time.time() - start_time
+                    else:
+                        total_time = time.time() - start_time
                     print(f"\rOriginal: {full_sentence}")
                     print(f"\rCleaned: {cleaned_sentence}")
                     print(f"\rFiltered: {filtered_sentence}")
