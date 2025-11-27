@@ -97,9 +97,9 @@ Data server started on ws://localhost:8012
 
 ---
 
-### **Terminal 2 — Start the CLI Transcriber**
+Terminal 2 — Start the CLI Transcriber**
 
-#### List available microphones:
+List available microphones:
 sh
 python -m sounddevice
 
@@ -173,10 +173,11 @@ VOTEXNEW/
 
 👨‍💻 Developers
 
-VOTEX Team**
+VOTEX Team
+- Akash Biswas
 - Divay Jain  
-- Mukul Prasad Singh  
-- (Add more contributors here)
+- Mukul Prasad 
+- Arav Gupta
 
 ---
 
