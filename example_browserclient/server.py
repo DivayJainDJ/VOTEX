@@ -99,15 +99,15 @@ if __name__ == '__main__':
     recorder_config = {
         'spinner': False,
         'use_microphone': False,
-        'model': 'small.en',  # Better accuracy than base
+        'model': 'base.en',  # Faster model for <1.5s latency
         'language': 'en',
         'silero_sensitivity': 0.5,
         'webrtc_sensitivity': 3,
-        'post_speech_silence_duration': 0.4,  # Slightly longer for better capture
-        'min_length_of_recording': 0.3,
+        'post_speech_silence_duration': 0.3,  # Faster detection
+        'min_length_of_recording': 0.2,
         'min_gap_between_recordings': 0,
         'enable_realtime_transcription': False,
-        'beam_size': 5,  # Better accuracy with beam search
+        'beam_size': 3,  # Balanced speed/accuracy
         'on_recording_start': recording_started,
         'on_recording_stop': recording_stopped,
     }
@@ -126,6 +126,9 @@ if __name__ == '__main__':
             try:
                 # Wait until recording is activated
                 recording_active.wait()
+                
+                import time
+                start_time = time.time()
                 
                 full_sentence = recorder.text()
                 if full_sentence:
@@ -203,10 +206,12 @@ if __name__ == '__main__':
                             send_to_client(json.dumps({
                                 'type': 'recording_complete'
                             })), main_loop)
+                    total_time = time.time() - start_time
                     print(f"\rOriginal: {full_sentence}")
                     print(f"\rCleaned: {cleaned_sentence}")
                     print(f"\rFiltered: {filtered_sentence}")
                     print(f"\rFinal: {final_sentence}")
+                    print(f"\r⏱️  Total processing time: {total_time:.3f}s")
                     # Stop recording after getting result
                     recording_active.clear()
             except Exception as e:

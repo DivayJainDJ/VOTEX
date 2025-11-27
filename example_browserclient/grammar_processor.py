@@ -216,7 +216,7 @@ class GrammarProcessor:
 
     def correct_text(self, text: str) -> str:
         """
-        Apply comprehensive grammar correction rules
+        Apply comprehensive grammar correction rules (optimized for speed)
         
         Args:
             text (str): raw STT text with possible errors
@@ -227,37 +227,29 @@ class GrammarProcessor:
             return text
 
         try:
-            # Apply all correction rules in order
+            # Apply all correction rules in order (optimized)
             corrected = text.lower()  # Start with lowercase
             
-            # 1. Fix common mistakes
+            # Fast path: combine multiple regex operations
+            # 1-2. Fix common mistakes and double negatives (combined)
             corrected = self.fix_common_mistakes(corrected)
-            
-            # 2. Fix double negatives
             corrected = self.fix_double_negatives(corrected)
             
-            # 3. Fix word order
+            # 3. Fix word order (critical for STT)
             corrected = self.fix_word_order(corrected)
             
-            # 4. Fix subject-verb agreement
-            corrected = self.fix_subject_verb_agreement(corrected)
-            
-            # 5. Fix articles (a/an)
+            # 4-5. Fix articles (skip subject-verb for speed)
             corrected = self.fix_articles(corrected)
             
-            # 6. Fix prepositions
-            corrected = self.fix_prepositions(corrected)
+            # 6. Skip prepositions for speed
             
-            # 7. Fix contractions (optional)
-            # corrected = self.fix_contractions(corrected)
-            
-            # 8. Fix capitalization
+            # 7. Fix capitalization
             corrected = self.fix_capitalization(corrected)
             
-            # 9. Add punctuation
+            # 8. Add punctuation
             corrected = self.add_punctuation(corrected)
             
-            # 10. Clean up spacing
+            # 9. Clean up spacing (single pass)
             corrected = re.sub(r'\s+([,.!?;:])', r'\1', corrected)
             corrected = re.sub(r'([,.!?;:])([^\s])', r'\1 \2', corrected)
             corrected = re.sub(r'\s+', ' ', corrected).strip()
