@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let statusDiv = document.getElementById('status');
     let micButton = document.getElementById('micButton');
     let historyDiv = document.getElementById('history');
+    let latencyDiv = document.getElementById('latencyDisplay');
     let server_available = false;
     let mic_available = false;
     let mic_active = false;
@@ -14,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let processor = null;
     let stream = null;
     let history = [];
+    let recordingStartTime = 0;
+    let currentTranscript = '';
+    let currentLatency = 0;
 
     const serverCheckInterval = 5000;
 
@@ -50,13 +54,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function addToHistory(text) {
-        history.unshift(text);
+    function addToHistory(text, latency) {
+        const timestamp = new Date().toLocaleTimeString();
+        const historyEntry = {
+            text: text,
+            latency: latency,
+            timestamp: timestamp
+        };
+        history.unshift(historyEntry);
         if (history.length > 10) history.pop();
         
-        historyDiv.innerHTML = history.map((item, index) => 
-            `<div class="history-item">${index + 1}. ${item}</div>`
-        ).join('');
+        historyDiv.innerHTML = history.map((item, index) => {
+            const latencyColor = item.latency < 1000 ? '#4caf50' : item.latency < 1500 ? '#ffeb3b' : '#ff6666';
+            return `<div class="history-item">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="flex: 1;">${index + 1}. ${item.text}</span>
+                    <span style="color: ${latencyColor}; font-size: 12px; margin-left: 10px; white-space: nowrap;">
+                        ⏱️ ${item.latency}ms
+                    </span>
+                </div>
+                <div style="font-size: 11px; color: #666; margin-top: 3px;">${item.timestamp}</div>
+            </div>`;
+        }).join('');
     }
 
     function updateStatus() {
@@ -75,6 +94,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function updateLatencyDisplay(latency) {
+        latencyDiv.style.display = 'inline-block';
+        
+        // Add warning if exceeding target
+        if (latency > 1500) {
+            latencyDiv.textContent = `⏱️ Latency: ${latency}ms ⚠️ (Target: <1500ms)`;
+        } else {
+            latencyDiv.textContent = `⏱️ Latency: ${latency}ms`;
+        }
+        
+        // Color code based on speed
+        latencyDiv.classList.remove('fast', 'medium', 'slow');
+        if (latency < 1000) {
+            latencyDiv.classList.add('fast');
+        } else if (latency < 1500) {
+            latencyDiv.classList.add('medium');
+        } else {
+            latencyDiv.classList.add('slow');
+        }
+    }
+
     function toggleMicrophone() {
         if (!mic_available || !server_available) {
             console.log('Cannot toggle: mic_available=', mic_available, 'server_available=', server_available);
@@ -88,6 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
             micButton.classList.add('active');
             resetStages();
             displayDiv.textContent = 'Listening...';
+            latencyDiv.style.display = 'none';
+            recordingStartTime = Date.now();
             
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ command: 'start_recording' }));
@@ -140,11 +182,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateStage(data.stage, data.text);
             } else if (data.type === 'fullSentence') {
                 displayDiv.textContent = data.text;
-                addToHistory(data.text);
+                currentTranscript = data.text;
             } else if (data.type === 'recording_complete') {
                 stopRecording();
                 statusDiv.textContent = "✅ Complete - Click to record again";
                 statusDiv.style.color = "#66ff66";
+                
+                // Update latency display and add to history
+                if (data.latency) {
+                    currentLatency = data.latency;
+                    updateLatencyDisplay(data.latency);
+                    addToHistory(currentTranscript, currentLatency);
+                }
                 
                 for (let i = 1; i <= 5; i++) {
                     stages[i].classList.add('active');
@@ -185,13 +234,20 @@ document.addEventListener('DOMContentLoaded', function() {
             updateStage(data.stage, data.text);
         } else if (data.type === 'fullSentence') {
             displayDiv.textContent = data.text;
-            addToHistory(data.text);
+            currentTranscript = data.text;
         } else if (data.type === 'recording_complete') {
             stopRecording();
             statusDiv.textContent = "✅ Complete - Click to record again";
             statusDiv.style.color = "#66ff66";
             
-            for (let i = 1; i <= 4; i++) {
+            // Update latency display and add to history
+            if (data.latency) {
+                currentLatency = data.latency;
+                updateLatencyDisplay(data.latency);
+                addToHistory(currentTranscript, currentLatency);
+            }
+            
+            for (let i = 1; i <= 5; i++) {
                 stages[i].classList.add('active');
             }
         }

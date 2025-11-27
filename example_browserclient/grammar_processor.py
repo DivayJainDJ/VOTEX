@@ -216,7 +216,8 @@ class GrammarProcessor:
 
     def correct_text(self, text: str) -> str:
         """
-        Apply comprehensive grammar correction rules (optimized for speed)
+        Apply ULTRA-FAST grammar correction (optimized for <1.5s total latency)
+        Only essential corrections to meet strict time budget
         
         Args:
             text (str): raw STT text with possible errors
@@ -227,31 +228,20 @@ class GrammarProcessor:
             return text
 
         try:
-            # Apply all correction rules in order (optimized)
-            corrected = text.lower()  # Start with lowercase
+            # SPEED-OPTIMIZED: Only critical corrections
+            corrected = text.lower()
             
-            # Fast path: combine multiple regex operations
-            # 1-2. Fix common mistakes and double negatives (combined)
+            # 1. Fix only the most common mistakes (fast regex)
             corrected = self.fix_common_mistakes(corrected)
-            corrected = self.fix_double_negatives(corrected)
             
-            # 3. Fix word order (critical for STT)
-            corrected = self.fix_word_order(corrected)
-            
-            # 4-5. Fix articles (skip subject-verb for speed)
-            corrected = self.fix_articles(corrected)
-            
-            # 6. Skip prepositions for speed
-            
-            # 7. Fix capitalization
+            # 2. Fix capitalization (essential for readability)
             corrected = self.fix_capitalization(corrected)
             
-            # 8. Add punctuation
+            # 3. Add basic punctuation (essential)
             corrected = self.add_punctuation(corrected)
             
-            # 9. Clean up spacing (single pass)
+            # 4. Clean up spacing (single pass)
             corrected = re.sub(r'\s+([,.!?;:])', r'\1', corrected)
-            corrected = re.sub(r'([,.!?;:])([^\s])', r'\1 \2', corrected)
             corrected = re.sub(r'\s+', ' ', corrected).strip()
             
             return corrected

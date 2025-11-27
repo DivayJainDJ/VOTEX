@@ -140,12 +140,13 @@
             padding: 15px;
         }
         .history-item {
-            padding: 8px;
-            margin-bottom: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
             background: rgba(255,255,255,0.05);
             border-radius: 5px;
             font-size: 14px;
-            color: #aaa;
+            color: #ccc;
+            border-left: 3px solid rgba(0,229,255,0.3);
         }
         .history::-webkit-scrollbar {
             width: 8px;
@@ -198,6 +199,28 @@
             color: #000;
             font-weight: 600;
             box-shadow: 0 0 20px rgba(0,229,255,0.5);
+        }
+        .latency-display {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .latency-display.fast {
+            color: #4caf50;
+            border-color: #4caf50;
+        }
+        .latency-display.medium {
+            color: #ffeb3b;
+            border-color: #ffeb3b;
+        }
+        .latency-display.slow {
+            color: #ff6666;
+            border-color: #ff6666;
         }
     </style>
 </head>
@@ -256,6 +279,7 @@
         <div class="final-output">
             <div class="final-output-title">📝 Final Output</div>
             <div class="final-text" id="finalText">Your transcription will appear here...</div>
+            <div class="latency-display" id="latencyDisplay" style="display: none;">⏱️ Latency: 0ms</div>
         </div>
 
         <div class="history" id="history">
