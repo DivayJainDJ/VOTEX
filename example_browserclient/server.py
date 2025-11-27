@@ -11,7 +11,9 @@ if __name__ == '__main__':
     import sys
     from fuzzywuzzy import fuzz
     from grammar_processor import GrammarProcessor
+    from tone_controller import ToneController
     from disfluency_filter import DisfluencyFilter
+    from auto_formatter import AutoFormatter
 
     logging.basicConfig(
         level=logging.INFO,
@@ -22,7 +24,12 @@ if __name__ == '__main__':
 
     # Initialize processors
     grammar = GrammarProcessor()
+    tone_controller = ToneController()
     disfluency_filter = DisfluencyFilter()
+    auto_formatter = AutoFormatter()
+    
+    # Default tone mode
+    current_tone_mode = 'neutral'
 
     is_running = True
     recorder = None
@@ -155,8 +162,17 @@ if __name__ == '__main__':
                                 'text': filtered_sentence
                             })), main_loop)
                     
-                    # Apply grammar correction (now fixed)
-                    final_sentence = grammar.correct_text(filtered_sentence)
+                    # Apply grammar correction
+                    corrected_sentence = grammar.correct_text(filtered_sentence)
+                    print(f"After grammar: {corrected_sentence}")
+                    
+                    # Apply tone transformation
+                    toned_sentence = tone_controller.transform(corrected_sentence, current_tone_mode)
+                    print(f"After tone ({current_tone_mode}): {toned_sentence}")
+                    
+                    # Apply auto-formatting (no bullets)
+                    final_sentence = auto_formatter.format_text(toned_sentence, use_paragraphs=True)
+                    print(f"After formatting: {final_sentence}")
                     
                     if main_loop is not None:
                         # Send stage 4: After grammar correction
@@ -164,7 +180,15 @@ if __name__ == '__main__':
                             send_to_client(json.dumps({
                                 'type': 'stage',
                                 'stage': 4,
-                                'text': final_sentence
+                                'text': corrected_sentence
+                            })), main_loop)
+                        
+                        # Send stage 5: After tone transformation
+                        asyncio.run_coroutine_threadsafe(
+                            send_to_client(json.dumps({
+                                'type': 'stage',
+                                'stage': 5,
+                                'text': toned_sentence
                             })), main_loop)
                         
                         # Send final result
@@ -221,6 +245,10 @@ if __name__ == '__main__':
                         elif control.get('command') == 'stop_recording':
                             recording_active.clear()
                             print("Recording stopped by client")
+                        elif control.get('command') == 'set_tone':
+                            global current_tone_mode
+                            current_tone_mode = control.get('mode', 'neutral')
+                            print(f"Tone mode changed to: {current_tone_mode}")
                         continue
                     
                     # Only process audio if recording is active

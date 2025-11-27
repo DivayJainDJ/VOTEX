@@ -22,18 +22,20 @@ document.addEventListener('DOMContentLoaded', function() {
         1: document.getElementById('stage1'),
         2: document.getElementById('stage2'),
         3: document.getElementById('stage3'),
-        4: document.getElementById('stage4')
+        4: document.getElementById('stage4'),
+        5: document.getElementById('stage5')
     };
 
     const stageContents = {
         1: document.getElementById('stage1-content'),
         2: document.getElementById('stage2-content'),
         3: document.getElementById('stage3-content'),
-        4: document.getElementById('stage4-content')
+        4: document.getElementById('stage4-content'),
+        5: document.getElementById('stage5-content')
     };
 
     function resetStages() {
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 5; i++) {
             stages[i].classList.remove('active');
             stageContents[i].textContent = 'Waiting...';
         }
@@ -144,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusDiv.textContent = "✅ Complete - Click to record again";
                 statusDiv.style.color = "#66ff66";
                 
-                for (let i = 1; i <= 4; i++) {
+                for (let i = 1; i <= 5; i++) {
                     stages[i].classList.add('active');
                 }
             }
@@ -215,6 +217,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set up microphone button
     micButton.addEventListener('click', toggleMicrophone);
+    
+    // Set up tone selector buttons
+    const toneButtons = document.querySelectorAll('.tone-btn');
+    toneButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const selectedTone = this.getAttribute('data-tone');
+            
+            // Update active state
+            toneButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Send tone change command to server
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({
+                    command: 'set_tone',
+                    mode: selectedTone
+                }));
+                console.log('Tone changed to:', selectedTone);
+                
+                // Show feedback
+                const originalText = statusDiv.textContent;
+                statusDiv.textContent = `✨ Tone set to ${selectedTone}`;
+                statusDiv.style.color = "#00e5ff";
+                setTimeout(() => {
+                    updateStatus();
+                }, 1500);
+            }
+        });
+    });
+    
     updateStatus();
 
     // Request microphone access
