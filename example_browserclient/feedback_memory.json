@@ -2246,6 +2246,18 @@
       "original": "Okay, so I was kind of thinking about the launch right and It's not it's not really you know ready because the the design team they They did not actually finish the mobile screens and I think and I think we we rushed the deadline a bit Wait, no, that's not what I mean. I mean the deadline was fine, but the The scope was too big and everyone was confused about what is actually important. And also, yeah, also the question and answer part was honestly last minute and we saw a lot of test cases just to ship something. So, yeah, I guess what I am trying to say is we should probably do a smaller, cleaner release first and then then add the rest later.",
       "output": "Okay, I was thinking about the launch and it's not ready because the design team they did not finish the mobile screens and I think we rushed the deadline a bit wait, no, that's not what. The deadline was fine, but the scope was too big and everyone was confused about what is important. And also, yes, also the question and answer part was honestly last minute and we saw a lot of test cases to ship something.\n\nSo, yes, I guess what I am trying to say is we should probably do a smaller, cleaner release first and then add the rest later.\n\n",
       "tone_mode": "neutral"
+    },
+    {
+      "timestamp": "2025-11-28T08:26:38.122797",
+      "original": "Right, so for the onboarding, I don't really think it's like working the way we imagined because people, they just drop off on the second screen and it's kind of feels too long and maybe also a bit, I don't know, boring. And I was trying to check the numbers and the numbers are that weird because signups are but like, I could just activate it from moving. So something is clearly off the way. Let me think. Yeah, I think the problem is we are asking for too much info at the start and then we really don't show any value until like the end of the flow. So yeah, um, I guess I guess we should, you know, cut the form like in half and show one strong value moment earlier instead of just just asking them to fill stuff forever.",
+      "output": "Right, for the onboarding, I do not think it is working the way we imagined because people, they drop off on the second screen and it is feels too long and maybe also a bit, I do not know, boring. And I was trying to check the numbers and that weird because signups are but , I could activate it from moving. Something is clearly off the way. Let me think. Yes, I think the problem is we are asking for too much info at the start and then we do not demonstrate any value until the end of the flow. Yes, , I guess we should, , cut the form in half and demonstrate one strong value moment earlier instead of asking them to fill stuff forever.\n\n",
+      "tone_mode": "neutral"
+    },
+    {
+      "timestamp": "2025-11-28T08:36:16.922032",
+      "original": "Right, so I mean for the onboarding I don't I don't really think it's like working the way we imagine because people they just drop off the second screen and it's kind of it kind of is too long and maybe maybe also bit I don't know boring and I was trying to check the numbers and the numbers are weird because signups are up for like the activation is the movie so something is clearly often wait, let me think yeah I think the problem is we are asking too much info at the start and then we don't really show any value until the end of the flow. So yeah, I guess we should, you know, cut the form like in half and show one strong value moment earlier instead of just asking them to fill the stuff forever.",
+      "output": "Right, for the onboarding I don't think it's working the way we imagine because people they drop off the second screen, and it's is too long, and maybe also bit I don't know boring, and I was trying to check the numbers, and the numbers are weird because signups are up for the activation is the movie something is clearly often wait, let me think yes I think the problem is we are asking too much info at the start, and then we don't show any value until the end of the flow. Yes, I guess we should, , cut the form in half, and show one strong value moment earlier instead of asking them to fill the stuff forever.\n\n",
+      "tone_mode": "neutral"
     }
   ],
   "rejected": [
@@ -2451,7 +2463,14 @@
       "output": "Okay, I was thinking about the launch ride and it's not ready because they designed the didn't finish the mobile screens and I think we have been rusted a line a bit wade snow that's not what the deadline was fine, but the the scope was too big and everyone was confused about what is important. And also, yes, also the qa part was honestly last night. And we, we saw a lot of skipped a lot of test cases to, ship something.\n\nSo, yes, I guess what I'm trying to say is we should probably do a smaller cleaner release first and then add the rest later.\n\n",
       "tone_mode": "neutral",
       "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T08:24:42.501518",
+      "original": "Right, so for the arm loading I don't I don't really think it's like working the way we imagine because people They just they just drop on the second Right, so for the arm loading I I don't I don't really think it's like working the way we imagine because people They just it is drop off on the second screen and it's kind of feels too long and maybe maybe also bit I don't know boring and I was trying to check numbers and the numbers are weird because sign ups are up but like the actual activation it's not moving so something is clearly of the weight let me think yeah I think the problem is we are asking too much info at the start and then we don't really show any value until the end of the flow so yeah um I guess I guess we should you know cut the form like in half and show one strong value moment early. Instead of just asking them to fill stuff forever. to our development.",
+      "output": "Right, for the arm loading I do not think it is working the way we imagine because people they drop on the second right, for the arm loading I do not I do not think it is working the way we imagine because people they it is drop off on the second screen and it is feels too long and maybe also bit I do not know boring and I was trying to check numbers and the numbers are weird because sign ups are up but the actual activation it is not moving something is clearly of the weight let me think yes I think the problem is we are asking too much info at the start and then we do not demonstrate any value until the end of the flow yes I guess we should cut the form in half and demonstrate one strong value moment early. Instead of asking them to fill stuff forever. To our development.\n\n",
+      "tone_mode": "formal",
+      "needs_correction": true
     }
   ],
-  "accuracy_score": 0.3409090909090909
+  "accuracy_score": 0.3617021276595745
 }

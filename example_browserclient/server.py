@@ -37,9 +37,10 @@ if __name__ == '__main__':
     logging.getLogger('websockets').setLevel(logging.WARNING)
 
     # Initialize processors
+    # Use rule-based only for speed (< 5ms vs ~150ms for model)
     if USE_HYBRID_GRAMMAR:
-        print("🤖 Initializing hybrid grammar processor (fine-tuned model + rules)...")
-        grammar = HybridGrammarProcessor(use_model=True)
+        print("⚡ Initializing hybrid grammar processor (rule-based for speed)...")
+        grammar = HybridGrammarProcessor(use_model=False)  # Disable model for speed
         print(f"📊 Grammar processor stats: {grammar.get_stats()}")
     else:
         print("📝 Initializing rule-based grammar processor...")
@@ -271,6 +272,7 @@ if __name__ == '__main__':
                 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
                 
                 MAX_LATENCY = 1.5  # Maximum allowed latency in seconds (for processing only)
+                GRAMMAR_TIMEOUT = 0.2  # Max time for grammar correction (reduced from 0.3s)
                 
                 # Get transcription (not counted in latency)
                 transcription_start = time.time()
@@ -337,8 +339,10 @@ if __name__ == '__main__':
                                 'text': full_sentence
                             })), main_loop)
                     
-                    # Apply deduplication to remove repetitions (fast operation)
-                    cleaned_sentence = dedupe_repetition(full_sentence)
+                    # Apply deduplication to remove repetitions (optimized for speed)
+                    dedup_start = time.time()
+                    cleaned_sentence = dedupe_repetition(full_sentence, window=6, score_thresh=90)
+                    print(f"⏱️ Deduplication: {time.time() - dedup_start:.3f}s")
                     
                     if main_loop is not None:
                         # Send stage 2: After deduplication
@@ -350,7 +354,9 @@ if __name__ == '__main__':
                             })), main_loop)
                     
                     # Remove disfluencies and fillers (fast operation)
+                    disfluency_start = time.time()
                     filtered_sentence = disfluency_filter.clean_text(cleaned_sentence)
+                    print(f"⏱️ Disfluency filter: {time.time() - disfluency_start:.3f}s")
                     
                     if main_loop is not None:
                         # Send stage 3: After filtering
@@ -363,7 +369,7 @@ if __name__ == '__main__':
                     
                     # Calculate remaining time budget for processing
                     elapsed = time.time() - start_time
-                    remaining_time = MAX_LATENCY - elapsed - 0.05  # Reserve 0.05s for final steps
+                    remaining_time = MAX_LATENCY - elapsed - 0.03  # Reserve 0.03s for final steps (reduced)
                     
                     if remaining_time <= 0.1:
                         # Not enough time left, skip grammar correction
@@ -375,14 +381,20 @@ if __name__ == '__main__':
                         # Try to complete grammar correction within strict time budget
                         with ThreadPoolExecutor(max_workers=1) as executor:
                             try:
-                                # Give grammar correction max 0.3s or remaining time, whichever is less
-                                grammar_timeout = min(0.3, remaining_time - 0.1)
-                                future = executor.submit(grammar.correct_text, filtered_sentence)
-                                corrected_sentence = future.result(timeout=grammar_timeout)
-                                print(f"After grammar: {corrected_sentence}")
+                                # Give grammar correction max 0.2s or remaining time, whichever is less
+                                grammar_timeout = min(GRAMMAR_TIMEOUT, remaining_time - 0.05)
+                                
+                                if grammar_timeout <= 0.05:
+                                    # Not enough time, skip grammar
+                                    corrected_sentence = filtered_sentence
+                                    print(f"⚠️ Skipping grammar correction (no time left)")
+                                else:
+                                    future = executor.submit(grammar.correct_text, filtered_sentence)
+                                    corrected_sentence = future.result(timeout=grammar_timeout)
+                                    print(f"After grammar: {corrected_sentence}")
                             except FuturesTimeoutError:
                                 corrected_sentence = filtered_sentence
-                                print(f"⚠️ Grammar correction timeout, using filtered text")
+                                print(f"⚠️ Grammar correction timeout ({grammar_timeout:.2f}s), using filtered text")
                         
                         # Apply tone transformation (fast operation)
                         tone_start = time.time()
