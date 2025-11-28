@@ -19,6 +19,15 @@ if __name__ == '__main__':
     from auto_formatter import AutoFormatter
     from feedback_memory import FeedbackMemory
     from database import TranscriptionDatabase
+    from paragraph_detector import ParagraphDetector
+    
+    # Try to import hybrid grammar processor (with fine-tuned model)
+    try:
+        from grammar_processor_hybrid import HybridGrammarProcessor
+        USE_HYBRID_GRAMMAR = True
+    except ImportError:
+        USE_HYBRID_GRAMMAR = False
+        print("⚠️ Hybrid grammar processor not available, using rule-based only")
 
     logging.basicConfig(
         level=logging.INFO,
@@ -28,10 +37,23 @@ if __name__ == '__main__':
     logging.getLogger('websockets').setLevel(logging.WARNING)
 
     # Initialize processors
-    grammar = GrammarProcessor()
+    if USE_HYBRID_GRAMMAR:
+        print("🤖 Initializing hybrid grammar processor (fine-tuned model + rules)...")
+        grammar = HybridGrammarProcessor(use_model=True)
+        print(f"📊 Grammar processor stats: {grammar.get_stats()}")
+    else:
+        print("📝 Initializing rule-based grammar processor...")
+        grammar = GrammarProcessor()
     tone_controller = ToneController()
     disfluency_filter = DisfluencyFilter()
     auto_formatter = AutoFormatter()
+    
+    # Initialize paragraph detector
+    # Note: 2s = paragraph break (continue recording), 5s = end transcription
+    paragraph_detector = ParagraphDetector(
+        sentence_pause=2.0,    # 2 seconds = paragraph break (add \n\n, keep recording)
+        paragraph_pause=5.0    # 5 seconds = end transcription (stop and process)
+    )
     
     # Initialize database
     db = TranscriptionDatabase()
@@ -42,6 +64,7 @@ if __name__ == '__main__':
     # Default tone mode
     current_tone_mode = 'neutral'
     current_transcription_id = None
+    last_silence_duration = 0.0  # Track silence duration for paragraph detection
     
     print(f"📊 Database stats: {db.get_stats()}")
     print("🔧 Rule-based auto-improvement enabled")
@@ -162,18 +185,47 @@ if __name__ == '__main__':
                 client_websocket = None
                 print("Client disconnected")
 
+    # Track accumulated text during recording
+    accumulated_text = ""
+    last_realtime_text = ""
+    
     # Called when speech is detected (start of recording)
     def recording_started():
-        global main_loop
+        global main_loop, accumulated_text, last_realtime_text
+        accumulated_text = ""
+        last_realtime_text = ""
         if main_loop is not None:
             asyncio.run_coroutine_threadsafe(
                 send_to_client(json.dumps({
                     'type': 'recording_started'
                 })), main_loop)
     
+    # Called during recording for realtime transcription
+    def on_realtime_transcription_update(text):
+        global main_loop, accumulated_text, last_realtime_text
+        
+        # Check if there's a significant pause (text hasn't changed much)
+        # This indicates a 2-second pause for paragraph break
+        if text and text != last_realtime_text:
+            # New text detected after pause - add paragraph break
+            if accumulated_text and len(accumulated_text) > 0:
+                accumulated_text += "\n\n"
+            accumulated_text += text
+            last_realtime_text = text
+            
+            # Send realtime update with paragraph breaks
+            if main_loop is not None:
+                asyncio.run_coroutine_threadsafe(
+                    send_to_client(json.dumps({
+                        'type': 'realtime_update',
+                        'text': accumulated_text
+                    })), main_loop)
+    
     # Called when speech ends (processing begins)
     def recording_stopped():
-        global main_loop
+        global main_loop, last_silence_duration
+        
+        # 5 second silence reached - end transcription
         if main_loop is not None:
             asyncio.run_coroutine_threadsafe(
                 send_to_client(json.dumps({
@@ -187,10 +239,12 @@ if __name__ == '__main__':
         'language': 'en',
         'silero_sensitivity': 0.5,
         'webrtc_sensitivity': 3,
-        'post_speech_silence_duration': 3.0,  # 3 second pause to end transcription
+        'post_speech_silence_duration': 5.0,  # 5 seconds to end transcription and process
         'min_length_of_recording': 0.2,
         'min_gap_between_recordings': 0,
-        'enable_realtime_transcription': False,
+        'enable_realtime_transcription': True,  # Enable for 2s paragraph detection
+        'realtime_processing_pause': 0.1,
+        'on_realtime_transcription_update': on_realtime_transcription_update,  # Paragraph breaks
         'beam_size': 1,  # Greedy decoding for maximum speed
         'initial_prompt': None,  # Skip prompt processing
         'suppress_tokens': [-1],  # Minimal token suppression
@@ -338,9 +392,23 @@ if __name__ == '__main__':
                         
                         # Apply auto-formatting (fast operation)
                         format_start = time.time()
-                        final_sentence = auto_formatter.format_text(toned_sentence, use_paragraphs=True)
-                        print(f"After formatting: {final_sentence}")
+                        formatted_sentence = auto_formatter.format_text(toned_sentence, use_paragraphs=True)
+                        print(f"After formatting: {formatted_sentence}")
                         print(f"⏱️ Formatting: {time.time() - format_start:.3f}s")
+                        
+                        # Apply paragraph detection based on silence duration
+                        # Use the configured post_speech_silence_duration as a proxy
+                        silence_duration = recorder_config['post_speech_silence_duration']
+                        break_type = paragraph_detector.detect_break_type(silence_duration)
+                        
+                        if break_type == 'paragraph':
+                            final_sentence = paragraph_detector.format_text_with_breaks(formatted_sentence, 'paragraph')
+                            print(f"📄 Paragraph break detected ({silence_duration}s silence)")
+                        elif break_type == 'sentence':
+                            final_sentence = paragraph_detector.format_text_with_breaks(formatted_sentence, 'sentence')
+                            print(f"📝 Sentence ending detected ({silence_duration}s silence)")
+                        else:
+                            final_sentence = formatted_sentence
                     
                     if main_loop is not None:
                         # Send stage 4: After grammar correction

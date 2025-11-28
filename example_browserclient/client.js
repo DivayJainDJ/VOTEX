@@ -447,8 +447,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     updateStatus();
 
-    // Request microphone access
-    navigator.mediaDevices.getUserMedia({ 
+    // Function to request microphone permission
+    function requestMicrophonePermission() {
+        statusDiv.textContent = "🎤 Requesting microphone permission...";
+        statusDiv.style.color = "#ffaa66";
+        
+        navigator.mediaDevices.getUserMedia({ 
         audio: {
             echoCancellation: true,
             noiseSuppression: true,
@@ -487,12 +491,18 @@ document.addEventListener('DOMContentLoaded', function() {
             let combinedData = new Blob([metadataLength, metadataBytes, outputData.buffer]);
             socket.send(combinedData);
         };
-    })
-    .catch(e => {
-        console.error('Microphone access error:', e);
-        statusDiv.textContent = "❌ Microphone access denied";
-        statusDiv.style.color = "#ff6666";
-    });
+        })
+        .catch(e => {
+            console.error('Microphone access error:', e);
+            statusDiv.textContent = "❌ Microphone access denied. Click here to try again.";
+            statusDiv.style.color = "#ff6666";
+            statusDiv.style.cursor = "pointer";
+            statusDiv.onclick = requestMicrophonePermission;
+        });
+    }
+    
+    // Auto-request permission on load
+    requestMicrophonePermission();
 
     // Approve/Reject button handlers
     approveButton.addEventListener('click', function() {
