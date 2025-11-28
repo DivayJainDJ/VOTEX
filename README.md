@@ -1,193 +1,110 @@
-VOTEX — Real-Time Offline Speech-to-Text Engine
+VOTEX — Real-Time Speech-to-Text Engine
 
-VOTEX is a lightweight, fast, and fully offline **real-time speech-to-text (STT) system designed for personal assistants, automation tools, accessibility applications, and voice-controlled interfaces.
-
-Powered by Whisper, VOTEX processes audio locally and provides low-latency transcription with no internet connection required.
+VOTEX is a lightweight real-time speech-to-text (STT) system using a Python WebSocket server with multiple clients (CLI, browser, and web UI). It supports real-time audio streaming, transcription, formatting, disfluency removal, grammar correction, and tone control.
 
 ---
 
 🚀 Features
-
-🔊 Real-Time Transcription  
-Transcribes speech as you speak with smooth, continuous updates.
-
-📴 Fully Offline  
-No cloud services. No API calls.  
-Your audio stays on your device.
-
-⚡ Fast & Lightweight  
-Optimized to run even on laptops without GPUs.
-
-🧩 Customizable  
-Configure:
-- Audio sensitivity  
-- Silence detection  
-- Model size  
-- Thresholds  
-- Recording parameters  
-
-🎙 Built-in VAD (Voice Activity Detection)  
-Automatically detects when you start/stop speaking.
-
-🛠 Modular Design  
-Includes:
-- STT server  
-- CLI client  
-- Optional web interface  
-- Audio processing utilities  
+- Real-time low-latency transcription  
+- Whisper-based STT (local & offline)  
+- CLI microphone client  
+- Browser & Web UI demos  
+- Auto punctuation & formatting  
+- Disfluency removal (uh, um, etc.)  
+- Optional grammar & tone improvement (T5-based)  
+- Works on CPU or GPU  
+- Fully configurable (model, language, VAD, sensitivity)
 
 ---
 
-🏗 Architecture Overview
+🧱 Project Structure
+VOTEX/
+├── RealtimeSTT/ # STT utilities
+├── RealtimeSTT_server/ # Core server + CLI client
+├── example_webserver/ # Web UI demo
+├── example_browserclient/ # Browser WebSocket demo
+├── grammar-correction-model/ # T5 grammar/tone model
+├── auto_formatter.py
+├── disfluency_filter.py
+└── requirements.txt / gpu.txt
 
-
-+-------------------------+
-|       VOTEX SERVER      |
-|  (Audio + Whisper STT)  |
-+-----------+-------------+
-            |
-         WebSocket
-            |
-+-----------+-------------+
-|            CLIENTS      |
-|  - CLI Transcriber      |
-|  - Browser Interface    |
-|  - Custom Apps          |
-+-------------------------+
-
+yaml
+Copy code
 
 ---
 
-📦 Installation
-
-1. Clone the Repository**
-sh
-git clone https://github.com/MUKUL-PRASAD-SIGH/VOTEXNEW.git
-cd VOTEXNEW
-
-2. Create Python Environment**
-sh
+⚙️ Installation
+bash
+git clone https://github.com/DivayJainDJ/VOTEX.git
+cd VOTEX
 conda create -n votex python=3.10
 conda activate votex
-
-3. Install Dependencies**
-sh
 pip install -r requirements.txt
+macOS:
 
-4. (macOS Only) Install Audio Dependencies**
-sh
+bash
+Copy code
 brew install portaudio ffmpeg
+GPU (optional):
 
-
----
-
-▶️ Running VOTEX
-
-Terminal 1 — Start the STT Server**
-sh
-conda activate votex
-cd VOTEXNEW
+bash
+Copy code
+pip install -r requirements-gpu.txt
+▶️ Run the STT Server
+bash
+Copy code
 python -m RealtimeSTT_server.stt_server
+You’ll see:
 
-You should see:
-
-Control server started on ws://localhost:8011
-Data server started on ws://localhost:8012
-
-
----
-
-Terminal 2 — Start the CLI Transcriber**
-
-List available microphones:
-sh
-python -m sounddevice
-
-Example output:
-0 MacBook Microphone
-1 MacBook Speakers
-
-Start continuous transcription:
-sh
+nginx
+Copy code
+Control server: ws://localhost:8011
+Data server:    ws://localhost:8012
+Run CLI Client
+bash
+Copy code
+python -m sounddevice      # find device index
 python RealtimeSTT_server/stt_cli_client.py -i 0 --continous
+🌐 Web & Browser Demos
+Web UI:
 
-Where `-i 0` selects mic device index 0.
-
----
-
-## 🌐 Optional: Launch Web Interface
-
-sh
+bash
+Copy code
 cd example_webserver
 python server.py
+Browser WebSocket demo:
 
-Open the link shown in the terminal (e.g., http://localhost:8000).
+Copy code
+example_browserclient/
+✍️ Grammar & Tone (Optional)
+Use:
 
----
+grammar-correction-model/
 
-🛠 Customization
+auto_formatter.py
 
-Change STT Model
-Edit:
+disfluency_filter.py
 
-RealtimeSTT_server/stt_server.py
+👥 Contributors
 
+Akash Biswas
 
-Example:
-python
-model="medium"
-language="en"
+Divay Jain
 
+Mukul Prasad
 
-Adjust VAD + Silence Detection
-Tune:
-- post_silence  
-- early_transcription  
-- sensitivity  
-- min recording length  
-
-(These parameters are inside the server config.)
-
-Adjust from CLI:
-sh
--s PARAM VALUE
-
-
----
-
-📂 Project Structure
-
-
-VOTEXNEW/
-│── RealtimeSTT/
-│── RealtimeSTT_server/
-│── example_app/
-│── example_webserver/
-│── tests/
-│── requirements.txt
-│── setup.py
-│── README.md
-
-
----
-
-👨‍💻 Developers
-
-VOTEX Team
-- Akash Biswas
-- Divay Jain  
-- Mukul Prasad 
-- Arav Gupta
-
----
+Arav Gupta
 
 📜 License
-Released under the MIT License.
+MIT License.
+
+⭐ Support
+Star ⭐ the repo if you find VOTEX useful!
 
 ---
 
-⭐ Support Us
 
-If VOTEX helped you, please ⭐ star the repository.  
-It motivates us to develop further improvements!
+
+
+
 
