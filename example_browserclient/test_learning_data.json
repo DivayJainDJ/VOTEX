@@ -1,0 +1,131 @@
+{
+  "exported_at": "2025-11-28T05:07:38.216633",
+  "stats": {
+    "total_transcriptions": 2,
+    "total_corrections": 6,
+    "active_rules": 5,
+    "approved": 2,
+    "rejected": 2,
+    "total": 4,
+    "accuracy": "50.0%"
+  },
+  "corrections": [
+    {
+      "id": 1,
+      "transcription_id": 1,
+      "timestamp": "2025-11-27 23:37:12",
+      "original_text": "I gotta go",
+      "wrong_output": "I gotta go.",
+      "corrected_output": "I must leave.",
+      "correction_type": "manual",
+      "tone_mode": "formal"
+    },
+    {
+      "id": 2,
+      "transcription_id": 1,
+      "timestamp": "2025-11-27 23:37:12",
+      "original_text": "I wanna eat",
+      "wrong_output": "I wanna eat.",
+      "corrected_output": "I would like to eat.",
+      "correction_type": "chatgpt",
+      "tone_mode": "formal"
+    },
+    {
+      "id": 3,
+      "transcription_id": null,
+      "timestamp": "2025-11-27 23:37:12",
+      "original_text": "I gotta sleep",
+      "wrong_output": "I gotta sleep.",
+      "corrected_output": "I must sleep.",
+      "correction_type": "manual",
+      "tone_mode": "formal"
+    },
+    {
+      "id": 4,
+      "transcription_id": 2,
+      "timestamp": "2025-11-27 23:37:38",
+      "original_text": "I gotta go",
+      "wrong_output": "I gotta go.",
+      "corrected_output": "I must leave.",
+      "correction_type": "manual",
+      "tone_mode": "formal"
+    },
+    {
+      "id": 5,
+      "transcription_id": 2,
+      "timestamp": "2025-11-27 23:37:38",
+      "original_text": "I wanna eat",
+      "wrong_output": "I wanna eat.",
+      "corrected_output": "I would like to eat.",
+      "correction_type": "chatgpt",
+      "tone_mode": "formal"
+    },
+    {
+      "id": 6,
+      "transcription_id": null,
+      "timestamp": "2025-11-27 23:37:38",
+      "original_text": "I gotta sleep",
+      "wrong_output": "I gotta sleep.",
+      "corrected_output": "I must sleep.",
+      "correction_type": "manual",
+      "tone_mode": "formal"
+    }
+  ],
+  "learned_rules": [
+    {
+      "id": 1,
+      "rule_key": "gotta→must:formal",
+      "from_word": "gotta",
+      "to_word": "must",
+      "tone_mode": "formal",
+      "usage_count": 4,
+      "success_count": 0,
+      "created_at": "2025-11-27 23:37:12",
+      "last_used": "2025-11-27 23:37:38"
+    },
+    {
+      "id": 2,
+      "rule_key": "go→leave.:formal",
+      "from_word": "go",
+      "to_word": "leave.",
+      "tone_mode": "formal",
+      "usage_count": 2,
+      "success_count": 0,
+      "created_at": "2025-11-27 23:37:12",
+      "last_used": "2025-11-27 23:37:38"
+    },
+    {
+      "id": 3,
+      "rule_key": "wanna→would:formal",
+      "from_word": "wanna",
+      "to_word": "would",
+      "tone_mode": "formal",
+      "usage_count": 2,
+      "success_count": 0,
+      "created_at": "2025-11-27 23:37:12",
+      "last_used": "2025-11-27 23:37:38"
+    },
+    {
+      "id": 4,
+      "rule_key": "eat→like:formal",
+      "from_word": "eat",
+      "to_word": "like",
+      "tone_mode": "formal",
+      "usage_count": 2,
+      "success_count": 0,
+      "created_at": "2025-11-27 23:37:12",
+      "last_used": "2025-11-27 23:37:38"
+    },
+    {
+      "id": 5,
+      "rule_key": "sleep→sleep.:formal",
+      "from_word": "sleep",
+      "to_word": "sleep.",
+      "tone_mode": "formal",
+      "usage_count": 2,
+      "success_count": 0,
+      "created_at": "2025-11-27 23:37:12",
+      "last_used": "2025-11-27 23:37:38"
+    }
+  ]
+}

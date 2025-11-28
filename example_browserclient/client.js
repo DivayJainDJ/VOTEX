@@ -18,8 +18,21 @@ document.addEventListener('DOMContentLoaded', function() {
     let recordingStartTime = 0;
     let currentTranscript = '';
     let currentLatency = 0;
+    let currentOriginal = '';
+    let currentToneMode = 'neutral';
 
     const serverCheckInterval = 5000;
+    
+    // Feedback UI elements
+    const feedbackButtons = document.getElementById('feedbackButtons');
+    const approveButton = document.getElementById('approveButton');
+    const rejectButton = document.getElementById('rejectButton');
+    const feedbackSection = document.getElementById('feedbackSection');
+    const correctionInput = document.getElementById('correctionInput');
+    const submitFeedback = document.getElementById('submitFeedback');
+    const autoImproveButton = document.getElementById('autoImproveButton');
+    const cancelFeedback = document.getElementById('cancelFeedback');
+    const feedbackStats = document.getElementById('feedbackStats');
 
     // Stage elements
     const stages = {
@@ -131,6 +144,10 @@ document.addEventListener('DOMContentLoaded', function() {
             latencyDiv.style.display = 'none';
             recordingStartTime = Date.now();
             
+            // Hide feedback UI when starting new recording
+            feedbackButtons.style.display = 'none';
+            feedbackSection.style.display = 'none';
+            
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ command: 'start_recording' }));
                 console.log('Sent start_recording command');
@@ -165,6 +182,12 @@ document.addEventListener('DOMContentLoaded', function() {
             server_available = true;
             console.log('WebSocket connected');
             updateStatus();
+            
+            // Request history on connection
+            socket.send(JSON.stringify({
+                command: 'get_history',
+                limit: 10
+            }));
         };
 
         socket.onmessage = function(event) {
@@ -180,13 +203,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusDiv.style.color = "#ffaa66";
             } else if (data.type === 'stage') {
                 updateStage(data.stage, data.text);
+                if (data.stage === 1) {
+                    currentOriginal = data.text;
+                }
             } else if (data.type === 'fullSentence') {
                 displayDiv.textContent = data.text;
                 currentTranscript = data.text;
             } else if (data.type === 'recording_complete') {
                 stopRecording();
-                statusDiv.textContent = "✅ Complete - Click to record again";
-                statusDiv.style.color = "#66ff66";
+                
+                if (data.learned) {
+                    statusDiv.textContent = "🧠 Used learned correction";
+                    statusDiv.style.color = "#00e5ff";
+                } else {
+                    statusDiv.textContent = "✅ Complete - Click to record again";
+                    statusDiv.style.color = "#66ff66";
+                }
                 
                 // Update latency display and add to history
                 if (data.latency) {
@@ -195,9 +227,55 @@ document.addEventListener('DOMContentLoaded', function() {
                     addToHistory(currentTranscript, currentLatency);
                 }
                 
+                // Show approve/reject buttons
+                feedbackButtons.style.display = 'flex';
+                
                 for (let i = 1; i <= 5; i++) {
                     stages[i].classList.add('active');
                 }
+            } else if (data.type === 'feedback_received') {
+                // Show feedback message temporarily
+                const tempMessage = document.createElement('div');
+                tempMessage.textContent = data.message + ` | Accuracy: ${data.stats.accuracy} | Approved: ${data.stats.approved} | Rejected: ${data.stats.rejected}`;
+                tempMessage.style.cssText = 'margin-top: 10px; padding: 10px; background: rgba(76,175,80,0.2); border-radius: 5px; color: #4caf50; font-size: 12px;';
+                displayDiv.parentElement.appendChild(tempMessage);
+                
+                setTimeout(() => {
+                    tempMessage.remove();
+                    // Only hide feedback section if it's not currently visible (i.e., user is not editing)
+                    if (feedbackSection.style.display !== 'block') {
+                        updateStatus();
+                    }
+                }, 2000);
+            } else if (data.type === 'auto_improved') {
+                correctionInput.value = data.correction;
+                feedbackStats.textContent = data.message + ` | Accuracy: ${data.stats.accuracy}`;
+                feedbackStats.style.color = '#9c27b0';
+            } else if (data.type === 'auto_improve_failed') {
+                feedbackStats.textContent = data.message;
+                feedbackStats.style.color = '#ff6666';
+            } else if (data.type === 'history_loaded') {
+                // Load history from database
+                console.log('Loading history:', data.history.length, 'items');
+                history = data.history.map(item => ({
+                    text: item.text,
+                    latency: item.latency,
+                    timestamp: new Date(item.timestamp).toLocaleTimeString()
+                }));
+                
+                // Display history
+                historyDiv.innerHTML = history.map((item, index) => {
+                    const latencyColor = item.latency < 1000 ? '#4caf50' : item.latency < 1500 ? '#ffeb3b' : '#ff6666';
+                    return `<div class="history-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="flex: 1;">${index + 1}. ${item.text}</span>
+                            <span style="color: ${latencyColor}; font-size: 12px; margin-left: 10px; white-space: nowrap;">
+                                ⏱️ ${item.latency}ms
+                            </span>
+                        </div>
+                        <div style="font-size: 11px; color: #666; margin-top: 3px;">${item.timestamp}</div>
+                    </div>`;
+                }).join('');
             }
         };
 
@@ -217,6 +295,12 @@ document.addEventListener('DOMContentLoaded', function() {
         server_available = true;
         console.log('WebSocket connected');
         updateStatus();
+        
+        // Request history on connection
+        socket.send(JSON.stringify({
+            command: 'get_history',
+            limit: 10
+        }));
     };
 
     socket.onmessage = function(event) {
@@ -232,13 +316,22 @@ document.addEventListener('DOMContentLoaded', function() {
             statusDiv.style.color = "#ffaa66";
         } else if (data.type === 'stage') {
             updateStage(data.stage, data.text);
+            if (data.stage === 1) {
+                currentOriginal = data.text;
+            }
         } else if (data.type === 'fullSentence') {
             displayDiv.textContent = data.text;
             currentTranscript = data.text;
         } else if (data.type === 'recording_complete') {
             stopRecording();
-            statusDiv.textContent = "✅ Complete - Click to record again";
-            statusDiv.style.color = "#66ff66";
+            
+            if (data.learned) {
+                statusDiv.textContent = "🧠 Used learned correction";
+                statusDiv.style.color = "#00e5ff";
+            } else {
+                statusDiv.textContent = "✅ Complete - Click to record again";
+                statusDiv.style.color = "#66ff66";
+            }
             
             // Update latency display and add to history
             if (data.latency) {
@@ -247,9 +340,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 addToHistory(currentTranscript, currentLatency);
             }
             
+            // Show approve/reject buttons
+            feedbackButtons.style.display = 'flex';
+            
             for (let i = 1; i <= 5; i++) {
                 stages[i].classList.add('active');
             }
+        } else if (data.type === 'feedback_received') {
+            // Show feedback message temporarily
+            const tempMessage = document.createElement('div');
+            tempMessage.textContent = data.message + ` | Accuracy: ${data.stats.accuracy} | Approved: ${data.stats.approved} | Rejected: ${data.stats.rejected}`;
+            tempMessage.style.cssText = 'margin-top: 10px; padding: 10px; background: rgba(76,175,80,0.2); border-radius: 5px; color: #4caf50; font-size: 12px;';
+            displayDiv.parentElement.appendChild(tempMessage);
+            
+            setTimeout(() => {
+                tempMessage.remove();
+                // Only hide feedback section if it's not currently visible (i.e., user is not editing)
+                if (feedbackSection.style.display !== 'block') {
+                    updateStatus();
+                }
+            }, 2000);
+        } else if (data.type === 'auto_improved') {
+            correctionInput.value = data.correction;
+            feedbackStats.textContent = data.message + ` | Accuracy: ${data.stats.accuracy}`;
+            feedbackStats.style.color = '#9c27b0';
+        } else if (data.type === 'auto_improve_failed') {
+            feedbackStats.textContent = data.message;
+            feedbackStats.style.color = '#ff6666';
+        } else if (data.type === 'history_loaded') {
+            // Load history from database
+            console.log('Loading history:', data.history.length, 'items');
+            history = data.history.map(item => ({
+                text: item.text,
+                latency: item.latency,
+                timestamp: new Date(item.timestamp).toLocaleTimeString()
+            }));
+            
+            // Display history
+            historyDiv.innerHTML = history.map((item, index) => {
+                const latencyColor = item.latency < 1000 ? '#4caf50' : item.latency < 1500 ? '#ffeb3b' : '#ff6666';
+                return `<div class="history-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="flex: 1;">${index + 1}. ${item.text}</span>
+                        <span style="color: ${latencyColor}; font-size: 12px; margin-left: 10px; white-space: nowrap;">
+                            ⏱️ ${item.latency}ms
+                        </span>
+                    </div>
+                    <div style="font-size: 11px; color: #666; margin-top: 3px;">${item.timestamp}</div>
+                </div>`;
+            }).join('');
         }
     };
 
@@ -283,6 +422,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update active state
             toneButtons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+            
+            // Update current tone mode
+            currentToneMode = selectedTone;
             
             // Send tone change command to server
             if (socket.readyState === WebSocket.OPEN) {
@@ -352,5 +494,77 @@ document.addEventListener('DOMContentLoaded', function() {
         statusDiv.style.color = "#ff6666";
     });
 
+    // Approve/Reject button handlers
+    approveButton.addEventListener('click', function() {
+        // Send approval to server
+        socket.send(JSON.stringify({
+            command: 'approve',
+            original: currentOriginal,
+            output: currentTranscript,
+            tone_mode: currentToneMode
+        }));
+        feedbackButtons.style.display = 'none';
+        statusDiv.textContent = '✓ Output approved! System learning...';
+        statusDiv.style.color = '#4caf50';
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            updateStatus();
+        }, 2000);
+    });
+    
+    rejectButton.addEventListener('click', function() {
+        // Send rejection to server
+        socket.send(JSON.stringify({
+            command: 'reject',
+            original: currentOriginal,
+            output: currentTranscript,
+            tone_mode: currentToneMode
+        }));
+        feedbackButtons.style.display = 'none';
+        feedbackSection.style.display = 'block';
+        correctionInput.value = currentTranscript;
+        correctionInput.focus();
+        correctionInput.select();
+        feedbackStats.textContent = '✗ Output rejected. Provide correction or use Auto-Fix.';
+        feedbackStats.style.color = '#ff6666';
+    });
+    
+    autoImproveButton.addEventListener('click', function() {
+        // Request ChatGPT auto-improvement
+        feedbackStats.textContent = '🤖 Asking ChatGPT for correction...';
+        feedbackStats.style.color = '#9c27b0';
+        socket.send(JSON.stringify({
+            command: 'auto_improve',
+            original: currentOriginal,
+            wrong_output: currentTranscript,
+            tone_mode: currentToneMode
+        }));
+    });
+    
+    submitFeedback.addEventListener('click', function() {
+        const userCorrection = correctionInput.value.trim();
+        if (userCorrection && userCorrection !== currentTranscript) {
+            // Send manual feedback to server
+            socket.send(JSON.stringify({
+                command: 'feedback',
+                original: currentOriginal,
+                system_output: currentTranscript,
+                user_correction: userCorrection,
+                tone_mode: currentToneMode
+            }));
+            feedbackStats.textContent = '✓ Manual correction submitted! Learning...';
+            feedbackStats.style.color = '#4caf50';
+        } else {
+            feedbackSection.style.display = 'none';
+            feedbackButtons.style.display = 'flex';
+        }
+    });
+    
+    cancelFeedback.addEventListener('click', function() {
+        feedbackSection.style.display = 'none';
+        feedbackButtons.style.display = 'flex';
+    });
+    
     console.log('Client initialized successfully');
 });

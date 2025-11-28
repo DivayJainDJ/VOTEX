@@ -280,6 +280,51 @@
             <div class="final-output-title">📝 Final Output</div>
             <div class="final-text" id="finalText">Your transcription will appear here...</div>
             <div class="latency-display" id="latencyDisplay" style="display: none;">⏱️ Latency: 0ms</div>
+            
+            <!-- Approve/Reject Buttons -->
+            <div class="feedback-buttons" id="feedbackButtons" style="display: none; margin-top: 15px; 
+                 display: flex; gap: 10px; justify-content: center;">
+                <button id="approveButton" style="padding: 12px 30px; border-radius: 8px; 
+                        background: linear-gradient(135deg, #4caf50, #66bb6a); border: none; 
+                        color: white; font-weight: 600; cursor: pointer; font-size: 14px;
+                        box-shadow: 0 4px 15px rgba(76,175,80,0.3);">
+                    👍 Good Output
+                </button>
+                <button id="rejectButton" style="padding: 12px 30px; border-radius: 8px; 
+                        background: linear-gradient(135deg, #f44336, #e57373); border: none; 
+                        color: white; font-weight: 600; cursor: pointer; font-size: 14px;
+                        box-shadow: 0 4px 15px rgba(244,67,54,0.3);">
+                    👎 Wrong Output
+                </button>
+            </div>
+            
+            <!-- Manual Correction Section -->
+            <div class="feedback-section" id="feedbackSection" style="display: none; margin-top: 15px;">
+                <div style="margin-bottom: 10px; color: #ffeb3b; font-size: 14px; font-weight: 600;">
+                    ✏️ Provide Correction:
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="correctionInput" placeholder="Enter your correction..." 
+                           style="flex: 1; padding: 10px; border-radius: 5px; border: 2px solid rgba(0,229,255,0.3); 
+                                  background: rgba(0,0,0,0.3); color: white; font-size: 14px;">
+                    <button id="submitFeedback" style="padding: 10px 20px; border-radius: 5px; 
+                            background: linear-gradient(135deg, #00e5ff, #ffeb3b); border: none; 
+                            color: #000; font-weight: 600; cursor: pointer;">
+                        ✓ Submit
+                    </button>
+                    <button id="autoImproveButton" style="padding: 10px 20px; border-radius: 5px; 
+                            background: linear-gradient(135deg, #9c27b0, #ba68c8); border: none; 
+                            color: white; font-weight: 600; cursor: pointer;">
+                        🤖 Auto-Fix
+                    </button>
+                    <button id="cancelFeedback" style="padding: 10px 20px; border-radius: 5px; 
+                            background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); 
+                            color: white; cursor: pointer;">
+                        ✕ Cancel
+                    </button>
+                </div>
+                <div id="feedbackStats" style="margin-top: 10px; font-size: 12px; color: #888;"></div>
+            </div>
         </div>
 
         <div class="history" id="history">
