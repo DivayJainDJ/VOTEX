@@ -174,3 +174,88 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Extension Development Files
+# ========================
+
+# Node modules
+extension/node_modules/
+
+# Test files (development artifacts)
+extension/test-*.js
+extension/test-*.html
+extension/run-all-tests.js
+
+# Development summaries and task logs
+extension/TASK_*_SUMMARY.md
+extension/TASK_*_COMPLETION_SUMMARY.md
+
+# Development utilities
+extension/create-icons.html
+extension/package-extension.bat
+
+# NPM lock file (can be regenerated)
+extension/package-lock.json
+
+# Generated icons (if any)
+extension/icons/*.png
+extension/icons/*.ico
+extension/icons/*.svg
+
+# Audio files (test/example files)
+*.wav
+*.mp3
+*.ogg
+*.flac
+
+# Model files (machine learning models)
+*.tflite
+*.onnx
+*.pt
+*.pth
+*.h5
+*.pkl
+*.joblib
+
+# Jupyter Notebook outputs and checkpoints
+*.ipynb_checkpoints/
+Fine_Tune_T5_Grammar_Correction.ipynb
+
+# Batch files (Windows-specific automation)
+*.bat
+
+# IDE and Editor Files
+# ===================
+.vscode/
+.idea/
+.kiro/
+*.swp
+*.swo
+*~
+
+# OS Generated Files
+# ==================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and temporary files
+# ========================
+*.log
+*.tmp
+*.temp
+.cache/
+.temp/
+
+# Docker files (if not needed in repo)
+.dockerignore
+docker-compose.override.yml
+
+# Virtual environments (additional patterns)
+env_*/
+*_env/
+.conda/

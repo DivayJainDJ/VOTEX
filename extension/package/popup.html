@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding: 8px;
+      border-radius: 4px;
+      background-color: #f5f5f5;
+    }
+    
+    .status.enabled {
+      background-color: #e8f5e8;
+      color: #2d5a2d;
+    }
+    
+    .status.disabled {
+      background-color: #f5e8e8;
+      color: #5a2d2d;
+    }
+    
+    .toggle-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .toggle-button.enable {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .toggle-button.disable {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .error-message {
+      color: #d32f2f;
+      background-color: #ffebee;
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+      border-left: 3px solid #d32f2f;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    
+    .warning-message {
+      color: #f57c00;
+      background-color: #fff3e0;
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+      border-left: 3px solid #f57c00;
+    }
+    
+    .info-message {
+      color: #1976d2;
+      background-color: #e3f2fd;
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+      border-left: 3px solid #1976d2;
+    }
+    
+    .platform-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+    
+    .config-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+    
+    .config-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .config-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    
+    .config-option label {
+      color: #666;
+      cursor: pointer;
+    }
+    
+    .config-toggle {
+      position: relative;
+      width: 40px;
+      height: 20px;
+      background-color: #ccc;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .config-toggle.enabled {
+      background-color: #4CAF50;
+    }
+    
+    .config-toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: white;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+    }
+    
+    .config-toggle.enabled::after {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h3>Live Text Enhancement</h3>
+  </div>
+  
+  <div id="status" class="status disabled">
+    <span id="status-text">Extension Disabled</span>
+    <button id="toggle-button" class="toggle-button enable">Enable</button>
+  </div>
+  
+  <div id="platform-info" class="platform-info">
+    Platform: Not detected
+  </div>
+  
+  <div id="error-message" class="error-message" style="display: none;"></div>
+  
+  <div id="config-section" class="config-section">
+    <div class="config-title">Configuration</div>
+    
+    <div class="config-option">
+      <label for="disfluency-filter">Disfluency Filter</label>
+      <div id="disfluency-toggle" class="config-toggle enabled"></div>
+    </div>
+    
+    <div class="config-option">
+      <label for="grammar-correction">Grammar Correction</label>
+      <div id="grammar-toggle" class="config-toggle enabled"></div>
+    </div>
+    
+    <div class="config-option">
+      <label for="realtime-display">Real-time Display</label>
+      <div id="realtime-toggle" class="config-toggle enabled"></div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
