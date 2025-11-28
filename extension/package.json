@@ -1,0 +1,30 @@
+{
+  "name": "live-text-enhancement-extension-tests",
+  "version": "1.0.0",
+  "description": "Property-based tests for live text enhancement extension components",
+  "main": "test-component-bundling.js",
+  "scripts": {
+    "test": "node run-all-tests.js",
+    "test:all": "node run-all-tests.js",
+    "test:bundling": "node test-component-bundling.js",
+    "test:popup": "node test-popup-interface.js",
+    "test:platform": "node test-platform-injection.js",
+    "test:audio": "node test-audio-pipeline-initialization.js",
+    "test:permissions": "node test-permission-requests.js",
+    "test:text-enhancement": "node test-text-enhancement.js",
+    "test:text-display": "node test-text-display.js",
+    "test:disable": "node test-disable-behavior.js",
+    "test:enable": "node test-enable-behavior.js"
+  },
+  "dependencies": {
+    "fast-check": "^3.15.0",
+    "jsdom": "^23.2.0"
+  },
+  "keywords": [
+    "testing",
+    "property-based-testing",
+    "browser-extension"
+  ],
+  "author": "",
+  "license": "MIT"
+}
