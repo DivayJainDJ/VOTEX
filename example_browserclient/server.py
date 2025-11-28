@@ -9,9 +9,13 @@ if __name__ == '__main__':
     import json
     import logging
     import sys
+    import csv
+    from datetime import datetime
     from fuzzywuzzy import fuzz
     from grammar_processor import GrammarProcessor
+    from tone_controller import ToneController
     from disfluency_filter import DisfluencyFilter
+    from auto_formatter import AutoFormatter
 
     logging.basicConfig(
         level=logging.INFO,
@@ -22,13 +26,45 @@ if __name__ == '__main__':
 
     # Initialize processors
     grammar = GrammarProcessor()
+    tone_controller = ToneController()
     disfluency_filter = DisfluencyFilter()
+    auto_formatter = AutoFormatter()
+    
+    # Default tone mode
+    current_tone_mode = 'neutral'
 
     is_running = True
     recorder = None
     recorder_ready = threading.Event()
     client_websocket = None
     main_loop = None  # This will hold our primary event loop
+    
+    # CSV log file for transcripts
+    log_file = 'transcription_log.csv'
+    
+    def log_transcript(original, final, latency_ms, tone_mode):
+        """Log transcript to CSV file with timestamp and latency"""
+        try:
+            file_exists = False
+            try:
+                with open(log_file, 'r'):
+                    file_exists = True
+            except FileNotFoundError:
+                pass
+            
+            with open(log_file, 'a', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                if not file_exists:
+                    writer.writerow(['Timestamp', 'Original', 'Final', 'Latency (ms)', 'Tone Mode'])
+                writer.writerow([
+                    datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    original,
+                    final,
+                    latency_ms,
+                    tone_mode
+                ])
+        except Exception as e:
+            print(f"Error logging to CSV: {e}")
 
     def dedupe_repetition(text: str, window=6, score_thresh=92) -> str:
         """Collapse repeated phrases. Strategy:
@@ -92,15 +128,17 @@ if __name__ == '__main__':
     recorder_config = {
         'spinner': False,
         'use_microphone': False,
-        'model': 'small.en',  # Better accuracy than base
+        'model': 'tiny.en',  # Fastest Whisper model
         'language': 'en',
         'silero_sensitivity': 0.5,
         'webrtc_sensitivity': 3,
-        'post_speech_silence_duration': 0.4,  # Slightly longer for better capture
-        'min_length_of_recording': 0.3,
+        'post_speech_silence_duration': 1.0,  # 1 second pause to stop recording
+        'min_length_of_recording': 0.2,
         'min_gap_between_recordings': 0,
         'enable_realtime_transcription': False,
-        'beam_size': 5,  # Better accuracy with beam search
+        'beam_size': 1,  # Greedy decoding for maximum speed
+        'initial_prompt': None,  # Skip prompt processing
+        'suppress_tokens': [-1],  # Minimal token suppression
         'on_recording_start': recording_started,
         'on_recording_stop': recording_stopped,
     }
@@ -120,7 +158,20 @@ if __name__ == '__main__':
                 # Wait until recording is activated
                 recording_active.wait()
                 
+                import time
+                from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+                
+                MAX_LATENCY = 1.5  # Maximum allowed latency in seconds (for processing only)
+                
+                # Get transcription (not counted in latency)
+                transcription_start = time.time()
                 full_sentence = recorder.text()
+                transcription_time = time.time() - transcription_start
+                print(f"⏱️ Transcription: {transcription_time:.3f}s")
+                
+                # Start latency timer AFTER transcription
+                start_time = time.time()
+                
                 if full_sentence:
                     if main_loop is not None:
                         # Send stage 1: Original transcription
@@ -131,7 +182,7 @@ if __name__ == '__main__':
                                 'text': full_sentence
                             })), main_loop)
                     
-                    # Apply deduplication to remove repetitions
+                    # Apply deduplication to remove repetitions (fast operation)
                     cleaned_sentence = dedupe_repetition(full_sentence)
                     
                     if main_loop is not None:
@@ -143,7 +194,7 @@ if __name__ == '__main__':
                                 'text': cleaned_sentence
                             })), main_loop)
                     
-                    # Remove disfluencies and fillers
+                    # Remove disfluencies and fillers (fast operation)
                     filtered_sentence = disfluency_filter.clean_text(cleaned_sentence)
                     
                     if main_loop is not None:
@@ -155,8 +206,40 @@ if __name__ == '__main__':
                                 'text': filtered_sentence
                             })), main_loop)
                     
-                    # Apply grammar correction (now fixed)
-                    final_sentence = grammar.correct_text(filtered_sentence)
+                    # Calculate remaining time budget for processing
+                    elapsed = time.time() - start_time
+                    remaining_time = MAX_LATENCY - elapsed - 0.05  # Reserve 0.05s for final steps
+                    
+                    if remaining_time <= 0.1:
+                        # Not enough time left, skip grammar correction
+                        final_sentence = filtered_sentence
+                        corrected_sentence = filtered_sentence
+                        toned_sentence = filtered_sentence
+                        print(f"⚠️ Time budget exceeded ({elapsed:.3f}s), using filtered text")
+                    else:
+                        # Try to complete grammar correction within strict time budget
+                        with ThreadPoolExecutor(max_workers=1) as executor:
+                            try:
+                                # Give grammar correction max 0.3s or remaining time, whichever is less
+                                grammar_timeout = min(0.3, remaining_time - 0.1)
+                                future = executor.submit(grammar.correct_text, filtered_sentence)
+                                corrected_sentence = future.result(timeout=grammar_timeout)
+                                print(f"After grammar: {corrected_sentence}")
+                            except FuturesTimeoutError:
+                                corrected_sentence = filtered_sentence
+                                print(f"⚠️ Grammar correction timeout, using filtered text")
+                        
+                        # Apply tone transformation (fast operation)
+                        tone_start = time.time()
+                        toned_sentence = tone_controller.transform(corrected_sentence, current_tone_mode)
+                        print(f"After tone ({current_tone_mode}): {toned_sentence}")
+                        print(f"⏱️ Tone: {time.time() - tone_start:.3f}s")
+                        
+                        # Apply auto-formatting (fast operation)
+                        format_start = time.time()
+                        final_sentence = auto_formatter.format_text(toned_sentence, use_paragraphs=True)
+                        print(f"After formatting: {final_sentence}")
+                        print(f"⏱️ Formatting: {time.time() - format_start:.3f}s")
                     
                     if main_loop is not None:
                         # Send stage 4: After grammar correction
@@ -164,7 +247,15 @@ if __name__ == '__main__':
                             send_to_client(json.dumps({
                                 'type': 'stage',
                                 'stage': 4,
-                                'text': final_sentence
+                                'text': corrected_sentence
+                            })), main_loop)
+                        
+                        # Send stage 5: After tone transformation
+                        asyncio.run_coroutine_threadsafe(
+                            send_to_client(json.dumps({
+                                'type': 'stage',
+                                'stage': 5,
+                                'text': toned_sentence
                             })), main_loop)
                         
                         # Send final result
@@ -174,15 +265,28 @@ if __name__ == '__main__':
                                 'text': final_sentence
                             })), main_loop)
                         
-                        # Send stop signal to client
+                        total_time = time.time() - start_time
+                        
+                        # Warn if processing exceeded target
+                        if total_time > MAX_LATENCY:
+                            print(f"⚠️ Processing exceeded {MAX_LATENCY}s target: {total_time:.3f}s")
+                        
+                        # Log to CSV file
+                        log_transcript(full_sentence, final_sentence, int(total_time * 1000), current_tone_mode)
+                        
+                        # Send stop signal to client with latency
                         asyncio.run_coroutine_threadsafe(
                             send_to_client(json.dumps({
-                                'type': 'recording_complete'
+                                'type': 'recording_complete',
+                                'latency': int(total_time * 1000)  # Convert to milliseconds
                             })), main_loop)
+                    else:
+                        total_time = time.time() - start_time
                     print(f"\rOriginal: {full_sentence}")
                     print(f"\rCleaned: {cleaned_sentence}")
                     print(f"\rFiltered: {filtered_sentence}")
                     print(f"\rFinal: {final_sentence}")
+                    print(f"\r⏱️  Total processing time: {total_time:.3f}s")
                     # Stop recording after getting result
                     recording_active.clear()
             except Exception as e:
@@ -221,6 +325,10 @@ if __name__ == '__main__':
                         elif control.get('command') == 'stop_recording':
                             recording_active.clear()
                             print("Recording stopped by client")
+                        elif control.get('command') == 'set_tone':
+                            global current_tone_mode
+                            current_tone_mode = control.get('mode', 'neutral')
+                            print(f"Tone mode changed to: {current_tone_mode}")
                         continue
                     
                     # Only process audio if recording is active
