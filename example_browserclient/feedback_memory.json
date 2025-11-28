@@ -1,0 +1,617 @@
+{
+  "corrections": [
+    {
+      "timestamp": "2025-11-28T04:45:57.283656",
+      "original": "You would have to go and pay for one.",
+      "system_output": "You would have to go, and pay for one.",
+      "user_correction": "You should go, and pay for one.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T04:57:05.170936",
+      "original": "I have to attend this test.",
+      "system_output": "I would like to have to attend this test.",
+      "user_correction": "I would like to attend this test.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T05:24:31.655759",
+      "original": "Here we are gonna go and play football.",
+      "system_output": "Here we are going to go and play football.",
+      "user_correction": "Here we are going play football.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T05:24:40.171851",
+      "original": "Here we are gonna go and play football.",
+      "system_output": "Here we are going to go and play football.",
+      "user_correction": "Here we are going play football.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T05:26:28.143627",
+      "original": "I want a football and want to play with each.",
+      "system_output": "I want a football, and want to play with each.",
+      "user_correction": "I want a football to play with it.",
+      "tone_mode": "concise"
+    },
+    {
+      "timestamp": "2025-11-28T05:27:32.343024",
+      "original": "I am going to play play.",
+      "system_output": "I am going to play play.",
+      "user_correction": "I am going to play.",
+      "tone_mode": "concise"
+    },
+    {
+      "timestamp": "2025-11-28T05:31:34.428391",
+      "original": "Okay, so I was planning to study with more.",
+      "system_output": "Okay, I was planning to study with more.",
+      "user_correction": "Okay, I was planning to study with mom.",
+      "tone_mode": "soft"
+    },
+    {
+      "timestamp": "2025-11-28T05:55:57.104432",
+      "original": "I want to learn match.",
+      "system_output": "I would like to want to learn match.",
+      "user_correction": "I would like to learn maths.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T06:18:46.963016",
+      "original": "I have to go and study.",
+      "system_output": "I have to play football. study.",
+      "user_correction": "I have to go and study.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T06:25:37.921882",
+      "original": "I have a hackathon.",
+      "system_output": "I would like to have a hackathon.",
+      "user_correction": "I have a hackathon.",
+      "tone_mode": "formal"
+    }
+  ],
+  "rules": {
+    "would→should:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "You would have to go and pay for one.",
+          "correction": "You should go, and pay for one."
+        }
+      ]
+    },
+    "have→go,:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "You would have to go and pay for one.",
+          "correction": "You should go, and pay for one."
+        }
+      ]
+    },
+    "to→and:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "You would have to go and pay for one.",
+          "correction": "You should go, and pay for one."
+        }
+      ]
+    },
+    "go→pay:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "You would have to go and pay for one.",
+          "correction": "You should go, and pay for one."
+        }
+      ]
+    },
+    "and→for:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "You would have to go and pay for one.",
+          "correction": "You should go, and pay for one."
+        }
+      ]
+    },
+    "pay→one.:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "You would have to go and pay for one.",
+          "correction": "You should go, and pay for one."
+        }
+      ]
+    },
+    "have→would:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I have to attend this test.",
+          "correction": "I would like to attend this test."
+        }
+      ]
+    },
+    "to→like:formal": {
+      "count": 2,
+      "examples": [
+        {
+          "original": "I have to attend this test.",
+          "correction": "I would like to attend this test."
+        },
+        {
+          "original": "I want to learn match.",
+          "correction": "I would like to learn maths."
+        }
+      ]
+    },
+    "attend→to:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I have to attend this test.",
+          "correction": "I would like to attend this test."
+        }
+      ]
+    },
+    "this→attend:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I have to attend this test.",
+          "correction": "I would like to attend this test."
+        }
+      ]
+    },
+    "test.→this:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I have to attend this test.",
+          "correction": "I would like to attend this test."
+        }
+      ]
+    },
+    "gonna→going:formal": {
+      "count": 2,
+      "examples": [
+        {
+          "original": "Here we are gonna go and play football.",
+          "correction": "Here we are going play football."
+        },
+        {
+          "original": "Here we are gonna go and play football.",
+          "correction": "Here we are going play football."
+        }
+      ]
+    },
+    "go→play:formal": {
+      "count": 2,
+      "examples": [
+        {
+          "original": "Here we are gonna go and play football.",
+          "correction": "Here we are going play football."
+        },
+        {
+          "original": "Here we are gonna go and play football.",
+          "correction": "Here we are going play football."
+        }
+      ]
+    },
+    "and→football.:formal": {
+      "count": 2,
+      "examples": [
+        {
+          "original": "Here we are gonna go and play football.",
+          "correction": "Here we are going play football."
+        },
+        {
+          "original": "Here we are gonna go and play football.",
+          "correction": "Here we are going play football."
+        }
+      ]
+    },
+    "and→to:concise": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I want a football and want to play with each.",
+          "correction": "I want a football to play with it."
+        }
+      ]
+    },
+    "want→play:concise": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I want a football and want to play with each.",
+          "correction": "I want a football to play with it."
+        }
+      ]
+    },
+    "to→with:concise": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I want a football and want to play with each.",
+          "correction": "I want a football to play with it."
+        }
+      ]
+    },
+    "play→it.:concise": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I want a football and want to play with each.",
+          "correction": "I want a football to play with it."
+        }
+      ]
+    },
+    "play→play.:concise": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I am going to play play.",
+          "correction": "I am going to play."
+        }
+      ]
+    },
+    "so→i:soft": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "Okay, so I was planning to study with more.",
+          "correction": "Okay, I was planning to study with mom."
+        }
+      ]
+    },
+    "i→was:soft": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "Okay, so I was planning to study with more.",
+          "correction": "Okay, I was planning to study with mom."
+        }
+      ]
+    },
+    "was→planning:soft": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "Okay, so I was planning to study with more.",
+          "correction": "Okay, I was planning to study with mom."
+        }
+      ]
+    },
+    "planning→to:soft": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "Okay, so I was planning to study with more.",
+          "correction": "Okay, I was planning to study with mom."
+        }
+      ]
+    },
+    "to→study:soft": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "Okay, so I was planning to study with more.",
+          "correction": "Okay, I was planning to study with mom."
+        }
+      ]
+    },
+    "study→with:soft": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "Okay, so I was planning to study with more.",
+          "correction": "Okay, I was planning to study with mom."
+        }
+      ]
+    },
+    "with→mom.:soft": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "Okay, so I was planning to study with more.",
+          "correction": "Okay, I was planning to study with mom."
+        }
+      ]
+    },
+    "want→would:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I want to learn match.",
+          "correction": "I would like to learn maths."
+        }
+      ]
+    },
+    "learn→to:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I want to learn match.",
+          "correction": "I would like to learn maths."
+        }
+      ]
+    },
+    "match.→learn:formal": {
+      "count": 1,
+      "examples": [
+        {
+          "original": "I want to learn match.",
+          "correction": "I would like to learn maths."
+        }
+      ]
+    }
+  },
+  "approved": [
+    {
+      "timestamp": "2025-11-28T05:01:05.078789",
+      "original": "Dude, I wanna go and play football.",
+      "output": ", I want to go and play football.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T05:02:23.952586",
+      "original": "I know my name is Moutheme Azog, I'm the other making me help.",
+      "output": "I know my name is moutheme azog, I'm the other making me help!",
+      "tone_mode": "soft"
+    },
+    {
+      "timestamp": "2025-11-28T05:09:12.476762",
+      "original": "I have to go ahead and study.",
+      "output": "I have to go ahead and study.",
+      "tone_mode": "soft"
+    },
+    {
+      "timestamp": "2025-11-28T05:18:52.378545",
+      "original": "But I would like to go and play football.",
+      "output": "But I would to go and play football.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T05:25:32.053231",
+      "original": "I have a umbrella.",
+      "output": "I would like to have a umbrella.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T05:25:52.482401",
+      "original": "So, I want an umbrella.",
+      "output": "So, I would like an umbrella, please.",
+      "tone_mode": "soft"
+    },
+    {
+      "timestamp": "2025-11-28T05:26:43.734684",
+      "original": "I want a football and play with it.",
+      "output": "I want a football and play with it.",
+      "tone_mode": "concise"
+    },
+    {
+      "timestamp": "2025-11-28T05:27:06.552216",
+      "original": "I have a two model, two model match.",
+      "output": "I have a two model, match.",
+      "tone_mode": "concise"
+    },
+    {
+      "timestamp": "2025-11-28T05:30:40.538246",
+      "original": "I want to play play football.",
+      "output": "I would like to want to play football.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T05:30:53.338791",
+      "original": "I want to learn, learn maths maths.",
+      "output": "If possible, I would like to learn, maths, please.",
+      "tone_mode": "soft"
+    },
+    {
+      "timestamp": "2025-11-28T05:31:49.170126",
+      "original": "Okay, so I'm ready to study with my mom.",
+      "output": "Okay, I'm ready to study with my mom.",
+      "tone_mode": "soft"
+    },
+    {
+      "timestamp": "2025-11-28T06:19:00.660886",
+      "original": "I have to go and study.",
+      "output": "I have to go and study.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T06:22:43.283195",
+      "original": "Hey, how are you? I wanted to go dance with you.",
+      "output": "Hello, how are you. I wanted to go dance with you.",
+      "tone_mode": "formal"
+    },
+    {
+      "timestamp": "2025-11-28T06:24:48.465579",
+      "original": "Hey, I have to go and study right now.",
+      "output": "Hello, I have to go and study now.",
+      "tone_mode": "formal"
+    }
+  ],
+  "rejected": [
+    {
+      "timestamp": "2025-11-28T05:00:49.785988",
+      "original": "I have gotten this class.",
+      "output": "I would like to have gotten this class.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:01:30.497823",
+      "original": "Dude, I wanna play football.",
+      "output": "Hey, , I wanna play football.",
+      "tone_mode": "casual",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:01:57.623481",
+      "original": "Hello, my name is Mukal Prasad and PR testing our system in here.",
+      "output": "Hello, my name is mukal prasad, and pr testing our system in here.",
+      "tone_mode": "soft",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:05:56.032806",
+      "original": "If the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the.",
+      "output": "If the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the one, the.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:08:54.686090",
+      "original": "You are going to go and play football.",
+      "output": "You are going to go and play football.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:09:50.492792",
+      "original": "I want to go to the park.",
+      "output": "I would like to want to go to the park.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:12:58.872209",
+      "original": "You are going to go and take a football.",
+      "output": "You are going to go, and take a football.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:15:54.909484",
+      "original": "Dude, I wanna go and play football.",
+      "output": ", I want to go and play football.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:18:34.222537",
+      "original": "You would have no go and play football.",
+      "output": "You would have no go and play football.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:19:07.194848",
+      "original": "I would like a T.",
+      "output": "I would a t.",
+      "tone_mode": "soft",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:21:38.774585",
+      "original": "Good morning everyone. Today I want to remind you of something simple but powerful. Progress is progress, no matter how small. We often wait for the perfect moment, the perfect plan or the perfect skill. That will before we begin something you haunted. But the truth is, great journey begin with imperfect steps. Every day we have a chance to move a little closer to the future. We imagine we're learning, trying, failing and trying again. So don't roll yourself back. Start now, start small, but start. because the best time to believe in yourself is today. Thank you.",
+      "output": "Good morning everyone. Today I want to remind you of something simple, but powerful. Progress is progress, no matter how small.\n\nWe often wait for the perfect moment, the perfect plan, or the perfect skill. That will before we begin something you haunted. But the truth is, great journey begin with imperfect steps!\n\nEvery day we have a chance to move a little closer to the future. We imagine we are learning, trying, failing, and trying again. Do not roll yourself back?\n\nStart now, start small,, but start. Because the best time to believe in yourself is today. Thank you.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:24:15.813268",
+      "original": "Here we are gonna go and play football.",
+      "output": "Here we are going to go and play football.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:26:12.900789",
+      "original": "I want a football and want to play with each.",
+      "output": "I want a football, and want to play with each.",
+      "tone_mode": "concise",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:27:23.532770",
+      "original": "I am going to play play.",
+      "output": "I am going to play play.",
+      "tone_mode": "concise",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:31:25.095788",
+      "original": "Okay, so I was planning to study with more.",
+      "output": "Okay, I was planning to study with more.",
+      "tone_mode": "soft",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:32:04.207038",
+      "original": "Okay, so do it once again, please.",
+      "output": "Okay, do it once again, please.",
+      "tone_mode": "soft",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:39:23.977772",
+      "original": "Hey, I wanna go and play football.",
+      "output": "Hey, I wanna play football. play football.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:41:22.610832",
+      "original": "You're gonna go and play football.",
+      "output": "You're playing play football. play football.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:42:46.449455",
+      "original": "I have to study for a converter.",
+      "output": "I would like to have to study for a converter.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:51:07.487507",
+      "original": "I want to play football.",
+      "output": "I would like to want to play football.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T05:55:46.969808",
+      "original": "I want to learn match.",
+      "output": "I would like to want to learn match.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T06:15:03.451291",
+      "original": "Hello, I am Akash Vizkoz. I am a student of MSRAT.",
+      "output": "Hello, I am akash vizkoz. I am a student of msrat.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T06:18:33.432208",
+      "original": "I have to go and study.",
+      "output": "I have to play football. study.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T06:25:05.700850",
+      "original": "",
+      "output": "",
+      "tone_mode": "neutral",
+      "needs_correction": true
+    },
+    {
+      "timestamp": "2025-11-28T06:25:28.722393",
+      "original": "I have a hackathon.",
+      "output": "I would like to have a hackathon.",
+      "tone_mode": "formal",
+      "needs_correction": true
+    }
+  ],
+  "accuracy_score": 0.358974358974359
+}

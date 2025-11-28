@@ -144,8 +144,8 @@ class AutoFormatter:
         
         return '\n\n'.join(paragraphs)
     
-    def format_text(self, text: str, use_paragraphs: bool = False) -> str:
-        """Enhanced text formatting"""
+    def format_text(self, text: str, use_paragraphs: bool = True) -> str:
+        """Enhanced text formatting with automatic paragraph detection"""
         if not text or not text.strip():
             return text
         
@@ -161,8 +161,8 @@ class AutoFormatter:
         # Capitalize properly
         sentences = self.capitalize_sentences(sentences)
         
-        # Create output
-        if use_paragraphs and len(sentences) > 2:
+        # Always create paragraphs for better readability
+        if len(sentences) > 2:
             return self.create_paragraphs(sentences)
         else:
             return ' '.join(sentences)
